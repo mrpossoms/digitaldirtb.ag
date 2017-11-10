@@ -2,7 +2,7 @@ import json
 from flask import Flask
 from flask import render_template
 
-from trip import TripPlanner
+from trip import *
 
 
 app = Flask('Digital Dirtbag')
@@ -18,5 +18,8 @@ def map():
     return render_template("map.html")
 
 if __name__ == '__main__':
-    stop_chain = planner.route()
+    ft_meyers = Coordinate(26.6256246, -81.9456026)
+    denver = Coordinate(39.7645187, -104.9951967)
+    GR = Coordinate(42.923180, -85.678650)
+    stop_chain = planner.route(start=ft_meyers, destination=GR)
     app.run(host='0.0.0.0')

@@ -2,7 +2,7 @@ import math
 import os
 import http.client
 import json
-import heapq
+import time
 
 SINGLETRACKS_API_KEY = '4LrZD8eibjmshtoAM8EcXm84NgiNp17UAvGjsnVAc43HXtGWcf'
 KEEP_OUT_ZONES = []
@@ -13,9 +13,12 @@ class Coordinate:
         self.lon = float(lon)
 
     def distance(self, coord):
+        return math.sqrt(self.distance_square(coord))
+
+    def distance_square(self, coord):
         d_lon = self.lon - coord.lon
         d_lat = self.lat - coord.lat
-        return math.sqrt(d_lon * d_lon + d_lat * d_lat)
+        return d_lon * d_lon + d_lat * d_lat
 
     def heading_to(self, waypoint):
         d_lat = waypoint.lat - self.lat
@@ -142,28 +145,49 @@ class Trail(LocationNode):
         self.city = dic['city']
         self.state = dic['state']
 
-    def find_neighbors(self, all_trails):
-        for trail in all_trails:
-            if trail.distance(self) < 1:
-                self.neighbors.append(trail)
+    def find_neighbors(self, trail_set):
+        adj_path = self.path + '/' + self.filename + '.adj'
+        if not os.path.exists(adj_path):
+            with open(adj_path, mode='w') as fp:
+                radius = 1
+                neighbors = []
+
+                while True:
+                    neighbors = trail_set.trails(at=self, within=radius)
+
+                    if len(neighbors) < 10:
+                        radius *= 2
+                    else:
+                        break
+
+                for neighbor in neighbors:
+                    if neighbor.trail_id != self.trail_id:
+                        self.adjacent.append(neighbor)
+                        fp.write(str(neighbor.trail_id) + '\n')
+        else:
+            with open(adj_path) as fp:
+                for l in fp:
+                    trail_id = int(l)
+                    trail = trail_set.all[trail_id]
+                    self.adjacent.append(trail)
 
     def score(self, waypoint, destination):
-        if self.visited:
-            return 0
 
-        distance_to_destination = self.distance(destination)
-        distance_from_traveler = self.distance(waypoint)
+        distance_to_destination = self.distance_square(destination)
+        distance_from_traveler = self.distance_square(waypoint)
 
         if distance_to_destination == 0 or distance_from_traveler == 0:
             return 0
 
         # Prevent the algorithm from crossing undesired boundaries
-        for keepout in KEEP_OUT_ZONES:
-            if keepout.is_between(self, waypoint):
-                return 0
+        # for keepout in KEEP_OUT_ZONES:
+        #     if keepout.is_between(self, waypoint):
+        #         return math.inf
 
-        return (self.rating * 1) / (distance_to_destination * 0.3 + distance_from_traveler * 0.7)
+        return distance_to_destination / (self.rating + 1) ** 3
 
+        # lots of meandering, but ignores trails that are good and nearby
+        #return (distance_to_destination * 0.02 + distance_from_traveler * 2) - self.rating
 
     @property
     def as_dictionary(self):
@@ -177,20 +201,27 @@ class Trail(LocationNode):
             'city': self.city,
             'state': self.state}
 
+    @property
+    def path(self):
+        return "geo/%d_%d" % (int(self.lat), int(self.lon))
+
+    @property
+    def filename(self):
+        return "%d-%f" % (self.trail_id, self.rating)
+
     def store(self):
-        path = "geo/%d_%d" % (int(self.lat), int(self.lon))
+        path = self.path
         if not os.path.exists(path):
             os.makedirs(path)
 
-        filename = "%d-%f" % (self.trail_id, self.rating)
-        with open(os.path.join(path, filename), 'w') as fd:
+        with open(os.path.join(path, self.filename), 'w') as fd:
             fd.write(json.dumps(self.as_dictionary))
 
     def __str__(self):
         return "(%f) %s - %s @ %f,%f" % (self.rating, self.name, self.state, self.lat, self.lon)
 
     def __lt__(self, other):
-        return self.last_score < other.last_score
+        return self.last_score > other.last_score
 
     def __eq__(self, other):
         return self.last_score == other.last_score
@@ -206,13 +237,25 @@ class TrailSet:
             trail.last_score = math.inf
             trail.prev = None
 
-    def nearest(self, coord, destination, last_distance):
+    def nearest(self, coord, destination, use_last_score=True):
         def score(item):
-            return item.score(waypoint=coord, destination=destination, last_distance=last_distance)
+            if use_last_score:
+                return item.last_score
+            else:
+                return item.score(coord, destination)
 
-        self.all = sorted(self.all, key=score, reverse=True)
+        self.all = sorted(self.all, key=score)
 
-        return self.all[:10]
+        return self.all[:1][0]
+
+    def trails(self, at, within=0.1):
+        trails = []
+
+        for trail in self.all.values():
+            if trail.distance_square(at) < within ** 2:
+                trails.append(trail)
+
+        return trails
 
 
 def trails_request(coord, radius=25, limit=4000):
@@ -221,38 +264,54 @@ def trails_request(coord, radius=25, limit=4000):
         'Accept': 'text/plain',
     }
 
-    con = http.client.HTTPSConnection('trailapi-trailapi.p.mashape.com')
-    query = '/?lat=%f&lon=%f&radius=%f&limit=%d&q[activities_activity_type_name_eq]=mountain+biking' % (
-    coord.lat, coord.lon, radius, limit)
-    con.request('GET', query, headers=headers)
+    for _ in range(1, 3):
+        con = http.client.HTTPSConnection('trailapi-trailapi.p.mashape.com')
+        query = '/?lat=%f&lon=%f&radius=%f&limit=%d&q[activities_activity_type_name_eq]=mountain+biking' % (
+        coord.lat, coord.lon, radius, limit)
+        con.request('GET', query, headers=headers)
 
-    lines = con.getresponse().readlines()
-    text = str(lines.pop(), 'utf8')
-    json_obj = json.loads(text)['places']
+        res = con.getresponse()
 
-    trails = []
+        if res.status != 200:
+            print(res.readlines())
+            time.sleep(1)
+            continue
 
-    for place in json_obj:
-        trails += [Trail(place)]
+        lines = res.readlines()
 
-    return trails
+        text = str(lines.pop(), 'utf8')
+        json_obj = json.loads(text)['places']
 
+        trails = []
+
+        for place in json_obj:
+            trails += [Trail(place)]
+
+        return trails
+
+    return  []
 
 class TripPlanner:
-    def __init__(self, destination):
+    def __init__(self):
         self.all_trails = {}
-        self.destination = destination
         self.barriers = [Barrier(Coordinate(45.108409, -86.2403), Coordinate(41.771532, -87.30887))]
 
         if not os.path.exists('geo'):
             # m and M define a rectange that basically encapsulates the whole US
             m, M = Coordinate(48.061418, -125.551487), Coordinate(25.766589, -69.566654)
 
+            total = (int(m.lat) - int(M.lat)) * (int(M.lon) - int(m.lon))
+            processed = 0
+
             for lat in range(int(M.lat), int(m.lat)):
                 for lon in range(int(m.lon), int(M.lon)):
+                    processed += 1
+                    print('%d/%d' % (total, processed))
+
                     for trail in trails_request(Coordinate(lat, lon), 80):
                         self.all_trails[trail.trail_id] = trail
                         trail.store()
+
 
         else:
             for path in os.listdir('geo'):
@@ -261,46 +320,72 @@ class TripPlanner:
 
                 path = os.path.join('geo', path)
                 for file in os.listdir(path):
+                    if '.adj' in file:
+                        continue
+
                     with open(os.path.join(path, file)) as fd:
                         try:
                             dic = json.load(fp=fd)
                             trail = Trail(dic)
-
-                            if trail.rating < 2:
-                                continue
 
                             self.all_trails[trail.trail_id] = trail
 
                         except json.decoder.JSONDecodeError:
                             print('fuck')
 
-            for trail in self.all_trails:
-                trail.find_neighbors(self.all_trails)
+            trails = TrailSet(self.all_trails)
 
-    def route(self):
+            trail_idx = 0
+            for trail in self.all_trails.values():
+                print(str(trail_idx) + '/' + str(len(self.all_trails)))
+                trail.find_neighbors(trails)
+                trail_idx += 1
+
+    def route(self, start, destination):
         stop_chain = []
-        start = Coordinate(42.923180, -85.678650)
-        destinations = [Coordinate(39.7645187, -104.9951967)]
 
         ts = TrailSet(self.all_trails.values())
         ts.reset()
 
+        start = ts.nearest(start, destination=start, use_last_score=False)
+        start.last_score = start.score(waypoint=start, destination=destination)
+
         trails = []
+        last = None
 
-        for trail in ts.all:
-            trail.last_score = trail.score(start, self.destination)
-            heapq.heappush(trails, trail)
+        while ts.all:
+            u = ts.nearest(start, destination)
+            u.visited = True
 
-        while len(trails) > 0:
-            u = heapq.heappop()
+            if u.last_score == math.inf:
+                break
+
+            ts.all.remove(u)
+
+            if destination.distance(u) < 0.1:
+                last = u
+                break
 
             for neighbor in u.adjacent:
-                alt = u.last_score + neighbor.score(u, self.destination)
+
+                if neighbor is start or neighbor.visited is True: continue
+                alt = u.last_score + neighbor.score(u, destination)
 
                 if alt < neighbor.last_score:
                     neighbor.last_score = alt
                     neighbor.prev = u
 
+            last = u
+
+        while True:
+            stop_chain = [last.as_dictionary] + stop_chain
+
+            print(last)
+
+            if not last.prev:
+                break
+
+            last = last.prev
 
         return stop_chain
 
@@ -316,3 +401,4 @@ class TripPlanner:
     #     if destinations[0].distance(last_coord) <= 1:
     #         print('-----------')
     #         destinations.pop()
+    KEEP_OUT_ZONES.append(Barrier(Coordinate(41.666494, -87.237621), Coordinate(45.892313, -86.130711)))
