@@ -5,6 +5,7 @@ import json
 import math
 import time
 import os
+import numpy as np
 
 SINGLETRACKS_API_KEY = '4LrZD8eibjmshtoAM8EcXm84NgiNp17UAvGjsnVAc43HXtGWcf'
 
@@ -127,15 +128,20 @@ class TrailSet:
             # m and M define a rectange that basically encapsulates the whole US
             m, M = Coordinate(48.061418, -125.551487), Coordinate(25.766589, -69.566654)
 
-            total = (int(m.lat) - int(M.lat)) * (int(M.lon) - int(m.lon))
+            step = 0.25
+            d_lat = (m.lat - M.lat) / 0.25
+            d_lon = (M.lon - m.lon) / 0.25
+            total = d_lat * d_lon
             processed = 0
 
-            for lat in range(int(M.lat), int(m.lat)):
-                for lon in range(int(m.lon), int(M.lon)):
+            for lat in np.arange(int(M.lat), int(m.lat), step):
+                for lon in np.arange(int(M.lat), int(m.lat), step):
                     processed += 1
                     print('%d/%d' % (total, processed))
 
-                    for trail in trails_request(Coordinate(lat, lon), 80):
+                    miles_radius = Coordinate(lat, lon).distance_euclidean(Coordinate(lat + step, lon + step)) * 1.6
+
+                    for trail in trails_request(Coordinate(lat, lon), miles_radius):
                         self.all.append(trail)
                         self.all_table[trail.trail_id] = trail
                         trail.store()
