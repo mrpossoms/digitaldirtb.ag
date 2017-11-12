@@ -52,6 +52,11 @@ class Trail(LocationNode):
                     else:
                         break
 
+                def dist(item):
+                    return item.last_distance
+
+                neighbors = sorted(neighbors, key=dist)[:20]
+
                 for neighbor in neighbors:
                     if neighbor.trail_id != self.trail_id:
                         self.adjacent.append(neighbor)
@@ -135,7 +140,7 @@ class TrailSet:
             processed = 0
 
             for lat in np.arange(int(M.lat), int(m.lat), step):
-                for lon in np.arange(int(M.lat), int(m.lat), step):
+                for lon in np.arange(int(m.lon), int(M.lon), step):
                     processed += 1
                     print('%d/%d' % (total, processed))
 
@@ -175,12 +180,13 @@ class TrailSet:
             trail_idx += 1
 
     def reset(self):
-        self.all.clear()
+        self.all = []
 
         for trail in self.all_table.values():
             self.all.append(trail)
             trail.visited = False
-            trail.last_score = math.inf
+            trail.last_score = float("inf")
+            trail.last_distance = float('inf')
             trail.prev = None
 
     def nearest(self, coord, destination, use_last_score=True):
@@ -197,7 +203,7 @@ class TrailSet:
     def trails(self, at, within=0.1):
         trails = []
 
-        for trail in self.all.values():
+        for trail in self.all_table.values():
             if trail.distance_square(at) < within ** 2:
                 trails.append(trail)
 
@@ -217,15 +223,13 @@ def trails_request(coord, radius=25, limit=4000):
         con.request('GET', query, headers=headers)
 
         res = con.getresponse()
+        text = str(res.read())
 
         if res.status != 200:
-            print(res.readlines())
+            print(text)
             time.sleep(1)
             continue
 
-        lines = res.readlines()
-
-        text = str(lines.pop(), 'utf8')
         json_obj = json.loads(text)['places']
 
         trails = []

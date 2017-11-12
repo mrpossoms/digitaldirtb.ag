@@ -18,12 +18,14 @@ class Coordinate:
         ];
 
     def distance(self, coord):
-        return math.sqrt(self.distance_square(coord))
+        self.last_distance = math.sqrt(self.distance_square(coord))
+        return self.last_distance
 
     def distance_square(self, coord):
         d_lon = self.lon - coord.lon
         d_lat = self.lat - coord.lat
-        return d_lon * d_lon + d_lat * d_lat
+        self.last_distance = d_lon * d_lon + d_lat * d_lat
+        return self.last_distance
 
     def distance_euclidean(self, other):
         dist = 0
@@ -31,8 +33,8 @@ class Coordinate:
         p1 = other.point()
         for i in range(0, 3):
             dist += (p0[i] - p1[i]) ** 2
-
-        return math.sqrt(dist)
+        self.last_distance = math.sqrt(dist)
+        return self.last_distance
 
     def heading_to(self, waypoint):
         d_lat = waypoint.lat - self.lat
@@ -123,3 +125,4 @@ class LocationNode(Coordinate):
         self.lat = lat
         self.lon = lon
         self.visited = False
+        self.last_distance = float('inf')

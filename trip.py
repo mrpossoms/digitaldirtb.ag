@@ -33,7 +33,7 @@ class TripPlanner:
             u = self.trails.nearest(start, destination)
             u.visited = True
 
-            if u.last_score == math.inf:
+            if u.last_score == float('inf'):
                 break
 
             self.trails.all.remove(u)
