@@ -1,0 +1,14 @@
+@font-face {
+    font-family: 'MyScars';
+    src: url('/fonts/MYSCARS.woff') format('woff'),
+         url('/fonts/MYSCARS.ttf') format('truetype');
+}
+
+html {
+    font-family: Helvetica, Fallback Arial;
+}
+
+header {
+    font-family: 'MyScars', Fallback Arial;
+    font-size: 72px;
+}

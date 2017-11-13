@@ -1,6 +1,7 @@
 from markdown import Markdown
 import os
 from datetime import datetime, timezone
+from flask import Markup
 
 class Post:
     def __init__(self, path, keywords):
@@ -23,6 +24,9 @@ class Post:
     def __eq__(self, other):
         return self.date_posted == other.date_posted
 
+    def __html__(self):
+        return self.html
+
 
 class Posts:
     def __init__(self, base_path):
@@ -40,4 +44,11 @@ class Posts:
 
                 self.all.append(post)
 
+        self.all = sorted(self.all, reverse=True)
 
+    def post_markups(self):
+        markups = []
+        for post in self.all:
+            markups.append(Markup(post))
+
+        return markups

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Digital Dirtbag</title>
+    <link rel="stylesheet" href="/css/dd.css"/>
+</head>
+<body>
+<header>
+    Digital Dirtbag
+</header>
+<section>
+    <i>Nomadic work and life, one trail at a time...</i>
+</section>
+{% for post in posts %}
+<article>{{ post }}</article>
+{% endfor %}
+</body>
+</html>
