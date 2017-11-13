@@ -150,8 +150,6 @@ class TrailSet:
                         self.all.append(trail)
                         self.all_table[trail.trail_id] = trail
                         trail.store()
-
-
         else:
             for path in os.listdir('geo'):
                 if os.path.isfile(path):
@@ -223,12 +221,15 @@ def trails_request(coord, radius=25, limit=4000):
         con.request('GET', query, headers=headers)
 
         res = con.getresponse()
-        text = str(res.read())
+        text = res.read()
 
         if res.status != 200:
             print(text)
             time.sleep(1)
             continue
+
+        if isinstance(text, bytes):
+            text = text.decode('utf8')
 
         json_obj = json.loads(text)['places']
 

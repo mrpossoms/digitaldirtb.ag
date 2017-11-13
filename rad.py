@@ -3,7 +3,7 @@ from flask import Flask
 from flask import render_template
 
 from trip import *
-
+import posts
 
 app = Flask('Digital Dirtbag')
 planner = TripPlanner()
@@ -22,5 +22,7 @@ if __name__ == '__main__':
     denver = Coordinate(39.7645187, -104.9951967)
     GR = Coordinate(42.923180, -85.678650)
     # stop_chain = planner.route(start=GR, destination=ft_meyers)
+
+    posts = posts.Posts('/Users/kirk/code/digitaldirtb.ag/posts/')
     stop_chain = planner.route(start=ft_meyers, destination=GR)
     app.run(port=5000, host='0.0.0.0')
