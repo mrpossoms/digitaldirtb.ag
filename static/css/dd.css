@@ -7,6 +7,7 @@
 html {
     font-family: Helvetica, Fallback Arial;
     background-color: #a76640;
+    color: #333;
 }
 
 body {
@@ -14,7 +15,22 @@ body {
 }
 
 header {
+    margin-top: 20px;
+
     font-family: 'MyScars', Fallback Arial;
     font-size: 42px;
-    fill: #333
+}
+
+article {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+article > div {
+    margin-left: 20%;
+    margin-right: 20%;
+    margin-top: 20px;
+
+    border: solid 0.25px #333;
 }

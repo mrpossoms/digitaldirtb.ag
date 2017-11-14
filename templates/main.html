@@ -4,18 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digital Dirtbag</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>-->
     <link rel="stylesheet" href="/css/dd.css"/>
 </head>
 <body class="container-fluid">
 <header class="row">
-    <img class="center-block" src="images/dd.svg" height="140"/>
+    <center><img src="images/dd.svg" height="140"/></center>
     <center>Digital Dirtbag</center>
     <center><h3>Nomadic work and life, one trail at a time...</h3></center>
 </header>
 
+<!--<main class="col-md-">-->
+<!--</main>-->
 {% for post in posts %}
-<article>{{ post }}</article>
+<article>
+    {{ post }}
+    <div></div>
+</article>
 {% endfor %}
 </body>
 </html>

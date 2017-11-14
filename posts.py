@@ -9,14 +9,7 @@ class Post:
         self.html = ''
         self.date_posted = date = datetime.fromtimestamp(os.path.getctime(path), timezone.utc)
         self.keywords = keywords
-
-        with open(path) as post_file:
-            for line in post_file:
-                self.markdown += line
-
-        md = Markdown()
-        months = [None, 'January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-        self.html = md.convert(self.markdown) + '<time>%s %d, %d</time>' % (months[date.month], date.day, date.year)
+        self.path = path
 
     def __lt__(self, other):
         return self.date_posted < other.date_posted
@@ -25,6 +18,16 @@ class Post:
         return self.date_posted == other.date_posted
 
     def __html__(self):
+        if len(self.markdown) == 0:
+            with open(self.path) as post_file:
+                for line in post_file:
+                    self.markdown += line
+
+        md = Markdown()
+        months = [None, 'January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+        date = self.date_posted
+        self.html = md.convert(self.markdown) + '<center><time>%s %d, %d</time></center>' % (months[date.month], date.day, date.year)
+
         return self.html
 
 
