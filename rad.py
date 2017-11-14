@@ -8,7 +8,7 @@ import posts
 app = Flask('Digital Dirtbag', static_url_path='')
 
 planner = None
-posts = posts.Posts('/Users/kirk/code/digitaldirtb.ag/posts/')
+posts = posts.Posts('./posts/')
 
 @app.route("/route")
 def route():

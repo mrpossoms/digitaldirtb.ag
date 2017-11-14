@@ -6,9 +6,15 @@
 
 html {
     font-family: Helvetica, Fallback Arial;
+    background-color: #a76640;
+}
+
+body {
+    background-color: transparent;
 }
 
 header {
     font-family: 'MyScars', Fallback Arial;
-    font-size: 72px;
+    font-size: 42px;
+    fill: #333
 }
