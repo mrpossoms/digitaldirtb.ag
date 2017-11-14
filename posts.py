@@ -3,6 +3,7 @@ import os
 from datetime import datetime, timezone
 from flask import Markup
 
+
 class Post:
     def __init__(self, path, keywords):
         self.markdown = ''
@@ -49,9 +50,13 @@ class Posts:
 
         self.all = sorted(self.all, reverse=True)
 
-    def post_markups(self):
+    def post_markups(self, span=None):
         markups = []
+        post_index = 0
         for post in self.all:
-            markups.append(Markup(post))
+            if span is None or post_index in span:
+                markups.append(Markup(post))
+
+            post_index += 1
 
         return markups
