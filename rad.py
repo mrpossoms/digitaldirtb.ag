@@ -3,7 +3,7 @@ from flask import Flask
 from flask import render_template
 
 from trip import *
-from posts import *
+from posts import Posts
 
 app = Flask('Digital Dirtbag', static_url_path='')
 
@@ -28,7 +28,7 @@ def index():
 @app.route("/posts/<int:start>/<int:end>")
 def post_select(start, end):
     posts = Posts('./posts/')
-    return render_template("main.html", posts=posts.post_markups(range(start, end)))
+    return render_template("main.html", start=start, end=end, posts=posts.post_markups(range(start, end)))
 
 
 if __name__ == '__main__':
