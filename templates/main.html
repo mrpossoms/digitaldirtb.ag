@@ -17,13 +17,21 @@
 
 <!--<main class="col-md-">-->
 <!--</main>-->
-{% for post in posts %}
+{% for post in posts.markups(range(start, end)) %}
 <article>
     {{ post }}
     <div></div>
 </article>
+
 {% endfor %}
-<a href="/posts/{{start-6}}/{{stop-1}}"><</a>
-<a href="/posts/{{start+1}}/{{stop+6}}"></a>
+{% if start-6 >= 0 %}
+<a href="/posts/{{ start-6 }}/{{ start-1 }}"><</a>
+{% endif %}
+
+{% if posts.count() > end+1 %}
+<a href="/posts/{{ end+1 }}/{{ end+6 }}">></a>
+{% endif %}
+
+
 </body>
 </html>

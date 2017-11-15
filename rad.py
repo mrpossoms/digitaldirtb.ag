@@ -20,15 +20,16 @@ def route():
 
 
 @app.route("/")
+@app.route("/posts")
 def index():
     posts = Posts('./posts/')
-    return render_template("main.html", posts=posts.post_markups())
+    return render_template("main.html", start=0, end=5, posts=posts)
 
 
 @app.route("/posts/<int:start>/<int:end>")
 def post_select(start, end):
     posts = Posts('./posts/')
-    return render_template("main.html", start=start, end=end, posts=posts.post_markups(range(start, end)))
+    return render_template("main.html", start=start, end=end, posts=posts)
 
 
 if __name__ == '__main__':

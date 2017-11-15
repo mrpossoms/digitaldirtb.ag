@@ -50,7 +50,10 @@ class Posts:
 
         self.all = sorted(self.all, reverse=True)
 
-    def post_markups(self, span=None):
+    def count(self):
+        return len(self.all)
+
+    def markups(self, span=None):
         markups = []
         post_index = 0
         for post in self.all:
