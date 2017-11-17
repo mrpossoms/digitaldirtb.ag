@@ -15,22 +15,30 @@
     <sub><center>Nomadic work and life, one trail at a time...</center></sub>
 </header>
 
-<!--<main class="col-md-">-->
-<!--</main>-->
+<main>
 {% for post in posts.markups(range(start, end)) %}
 <article>
-    {{ post }}
     <div></div>
+    {{ post }}
 </article>
-
 {% endfor %}
-{% if start-6 >= 0 %}
-<a href="/posts/{{ start-6 }}/{{ start-1 }}"><</a>
-{% endif %}
+</main>
 
-{% if posts.count() > end+1 %}
-<a href="/posts/{{ end+1 }}/{{ end+6 }}">></a>
-{% endif %}
+<footer>
+<center>
+    <nav>
+    {% if start-6 >= 0 %}
+    <a href="/posts/{{ start-6 }}/{{ start-1 }}">< Newer</a>
+    {% endif %}
+
+    {% if posts.count() > end+1 %}
+    <a href="/posts/{{ end+1 }}/{{ end+6 }}">Older ></a>
+    {% endif %}
+    </nav>
+
+    © Kirk Roerig 2017
+</center>
+</footer>
 
 
 </body>
