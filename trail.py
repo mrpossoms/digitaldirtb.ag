@@ -2,7 +2,6 @@ from geography import LocationNode
 from geography import Coordinate
 import http.client
 import json
-import math
 import time
 import os
 import numpy as np
