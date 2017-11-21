@@ -1,0 +1,24 @@
+{% extends "main.html" %}
+
+{% block content %}
+{% for post in posts.markups(range(start, end)) %}
+<article>
+    <div></div>
+    {{ post }}
+</article>
+{% endfor %}
+{% endblock %}
+
+{% block footer %}
+<nav>
+    <center>
+        {% if start-6 >= 0 %}
+        <a href="/posts/{{ start-6 }}/{{ start-1 }}">< Newer</a>
+        {% endif %}
+
+        {% if posts.count() > end+1 %}
+        <a href="/posts/{{ end+1 }}/{{ end+6 }}">Older ></a>
+        {% endif %}
+    </center>
+</nav>
+{% endblock %}

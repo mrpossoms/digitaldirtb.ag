@@ -6,11 +6,13 @@
 
 html {
     font-family: 'Montserrat', sans-serif;
-    background-color: #a76640;
+    font-weight: bold;
+    background-color: rgb(255, 204, 151);
     color: #333;
 }
 
 body {
+    margin: 0;
     background-color: transparent;
 }
 
@@ -19,6 +21,8 @@ header {
 
     font-family: 'MyScars', Fallback Arial;
     font-size: 42px;
+
+
 }
 
 header > sub {
@@ -51,10 +55,16 @@ a {
     text-decoration: none;
 }
 
-nav > a {
+a {
     color: rgb(255, 132, 5);
 }
 
-nav > a:visited {
+a:visited {
     color: rgb(255, 48, 5);
+}
+
+#map {
+    height: 600px;
+    width: 100%;
+    margin-top: 20px;
 }

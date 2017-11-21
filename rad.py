@@ -19,17 +19,22 @@ def route():
     return "eqfeed_callback(" + json.dumps(stop_chain) + ")"
 
 
+@app.route("/map")
+def map():
+    return render_template("map.html")
+
+
 @app.route("/")
 @app.route("/posts")
 def index():
     posts = Posts('./posts/')
-    return render_template("main.html", start=0, end=5, posts=posts)
+    return render_template("posts.html", start=0, end=5, posts=posts)
 
 
 @app.route("/posts/<int:start>/<int:end>")
 def post_select(start, end):
     posts = Posts('./posts/')
-    return render_template("main.html", start=start, end=end, posts=posts)
+    return render_template("posts.html", start=start, end=end, posts=posts)
 
 
 if __name__ == '__main__':
