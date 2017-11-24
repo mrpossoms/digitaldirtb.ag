@@ -15,13 +15,27 @@ def route():
     GR = Coordinate(42.923180, -85.678650)
 
     planner = TripPlanner()
-    stop_chain = planner.route(start=ft_meyers, destination=GR)
-    return "eqfeed_callback(" + json.dumps(stop_chain) + ")"
+    stop_set = planner.route(start=GR, destination=denver)
+    nearby, nearby_dics, stop_dics = [], [], []
 
+    for stop in stop_set:
+        surrounding = planner.trails.trails(stop, within=1);
+        stop_dics.append(stop.as_dictionary)
+
+        for near in surrounding:
+            if near in nearby or near in stop_set:
+                continue
+
+            nearby.append(near)
+            nearby_dics.append(near.as_dictionary)
+
+    trails = {'route': stop_dics, 'other': nearby_dics}
+
+    return "eqfeed_callback(" + json.dumps(trails) + ")"
 
 @app.route("/map")
 def map():
-    return render_template("map.html")
+    return render_template('map.html')
 
 
 @app.route("/")

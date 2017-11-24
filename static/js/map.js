@@ -16,17 +16,30 @@ var script = document.createElement('script');
 
 // Loop through the results array and place a marker for each
 // set of coordinates.
-window.eqfeed_callback = function(results) {
+window.eqfeed_callback = function(trails) {
+    var route = trails.route;
+    var other = trails.other;
     var flightPlanCoordinates = [];
-    for (var i = 0; i < results.length; i++) {
-        var latLng = new google.maps.LatLng(results[i].lat,results[i].lon);
+
+    for (var i = 0; i < route.length; i++) {
+        var latLng = new google.maps.LatLng(route[i].lat,route[i].lon);
         var marker = new google.maps.Marker({
             position: latLng,
             map: map,
-            title: '(' + results[i].rating + ') ' + results[i].name,
+            title: '(' + route[i].rating + ') ' + route[i].name,
             label: i.toString()
         });
-        flightPlanCoordinates.push({lat: results[i].lat, lng: results[i].lon});
+        flightPlanCoordinates.push({lat: route[i].lat, lng: route[i].lon});
+    }
+
+    for (var i = 0; i < other.length; i++) {
+        var latLng = new google.maps.LatLng(other[i].lat, other[i].lon);
+        var marker = new google.maps.Marker({
+            position: latLng,
+            map: map,
+            title: '(' + other[i].rating + ') ' + other[i].name,
+            label: other[i].rating.toString()
+        });
     }
 
     var flightPath = new google.maps.Polyline({

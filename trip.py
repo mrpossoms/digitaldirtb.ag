@@ -20,7 +20,6 @@ class TripPlanner:
 
     def route(self, start, destination):
         stop_chain = []
-
         self.trails.reset()
 
         start = self.trails.nearest(start, destination=start, use_last_score=False)
@@ -53,8 +52,10 @@ class TripPlanner:
 
             last = u
 
+        end = last
+
         while True:
-            stop_chain = [last.as_dictionary] + stop_chain
+            stop_chain.append(last)
 
             print(last)
 

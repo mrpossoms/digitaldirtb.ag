@@ -7,6 +7,7 @@ import os
 import numpy as np
 
 SINGLETRACKS_API_KEY = '4LrZD8eibjmshtoAM8EcXm84NgiNp17UAvGjsnVAc43HXtGWcf'
+DIRECTIONS = []
 
 class Trail(LocationNode):
     def __init__(self, dic):
@@ -36,8 +37,19 @@ class Trail(LocationNode):
         self.city = dic['city']
         self.state = dic['state']
 
-    def find_neighbors(self, trail_set):
+    def find_neighbors(self, trail_set, adjacent=8):
+        global DIRECTIONS
+
         adj_path = self.path + '/' + self.filename + '.adj'
+
+        # pre compute direction vectors
+        if len(DIRECTIONS) != adjacent:
+            DIRECTIONS = []
+            dt = 2 * np.pi / adjacent
+
+            for t in range(0, adjacent):
+                DIRECTIONS.append([np.cos(t * dt), np.sin(t * dt)])
+
         if not os.path.exists(adj_path):
             with open(adj_path, mode='w') as fp:
                 radius = 1
@@ -56,10 +68,34 @@ class Trail(LocationNode):
 
                 neighbors = sorted(neighbors, key=dist)[:20]
 
-                for neighbor in neighbors:
-                    if neighbor.trail_id != self.trail_id:
-                        self.adjacent.append(neighbor)
-                        fp.write(str(neighbor.trail_id) + '\n')
+                # TODO pickhttp://www.digitaldirtb.ag the neighbors that most closely point to the DIRECTIONS vector
+                for dir in DIRECTIONS:
+                    best_dot = 0
+                    best = None
+                    for neighbor in neighbors:
+                        if neighbor is self: continue
+
+                        heading = self.heading_to(neighbor)
+
+                        if heading is None: continue
+
+                        dot = -np.inner(heading, dir)
+
+                        if best is None:
+                            best = neighbor
+                            best_dot = dot
+
+                        if dot > best_dot and best not in self.adjacent:
+                            best = neighbor
+                            best_dot = dot
+
+                    self.adjacent.append(best)
+                    fp.write(str(best.trail_id) + '\n')
+
+                # for neighbor in neighbors:
+                #     if neighbor.trail_id != self.trail_id:
+                #         self.adjacent.append(neighbor)
+                #         fp.write(str(neighbor.trail_id) + '\n')
         else:
             with open(adj_path) as fp:
                 for l in fp:
@@ -201,6 +237,7 @@ class TrailSet:
         trails = []
 
         for trail in self.all_table.values():
+            if trail is at: continue
             if trail.distance_square(at) < within ** 2:
                 trails.append(trail)
 

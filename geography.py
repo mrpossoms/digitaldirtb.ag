@@ -41,6 +41,9 @@ class Coordinate:
         d_lon = waypoint.lon - self.lon
         mag = math.sqrt(d_lat ** 2 + d_lon ** 2)
 
+        if mag == 0:
+            return None
+
         return [d_lat / mag, d_lon / mag]
 
     def heading_coincidence(self, other, destination):

@@ -1,1 +1,1 @@
-web: gunicorn rad:app --reload
+ wweb: gunicorn rad:app --reload
