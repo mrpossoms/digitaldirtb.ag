@@ -237,7 +237,6 @@ class TrailSet:
         trails = []
 
         for trail in self.all_table.values():
-            if trail is at: continue
             if trail.distance_square(at) < within ** 2:
                 trails.append(trail)
 
