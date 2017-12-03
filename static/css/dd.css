@@ -30,7 +30,7 @@ header > sub {
 }
 
 article {
-    max-width: 960px;
+    max-width: 760px;
     margin-left: auto;
     margin-right: auto;
     padding-left: 20px;
@@ -63,6 +63,12 @@ a {
 
 a:visited {
     color: rgb(255, 48, 5);
+}
+
+p > img {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
 }
 
 #map {
