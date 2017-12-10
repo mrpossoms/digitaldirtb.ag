@@ -8,7 +8,10 @@ class Post:
     def __init__(self, path, keywords):
         self.markdown = ''
         self.html = ''
-        self.date_posted = date = datetime.fromtimestamp(os.path.getctime(path), timezone.utc)
+
+        time_stamp = path.replace('.md', '').replace('.', '').replace('posts', '').replace('/', '')
+
+        self.date_posted = date = datetime.fromtimestamp(float(time_stamp), timezone.utc)
         self.keywords = keywords
         self.path = path
 
