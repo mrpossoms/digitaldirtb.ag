@@ -1,7 +1,7 @@
 Bloomington, IN
 ---------------
 
-I made a simple breakfast in the lot, oatmeal and peanut butter, while I was waiting for my engine block to heat up. As soon as I was done and my stuff was stoed I was off on my way. I headed south through Fort Wayne, IN and then toward Bloomington. Where my friend Katie had offered to put me up for the night. Bloomington is very much a college town, home to Indiana University, but it also has a lot of character. The campus is distributed throughout the town, and many of the buildings have a distinctly gothic architecture, which gives the city a mixed old-world yet modern feel.
+I made a simple breakfast in the lot, oatmeal and peanut butter, while I was waiting for my engine block to heat up. As soon as I was done and my stuff was stowed I was off on my way. I headed south through Fort Wayne, IN and then toward Bloomington. Where my friend Katie had offered to put me up for the night. Bloomington is very much a college town, home to Indiana University, but it also has a lot of character. The campus is distributed throughout the town, and many of the buildings have a distinctly gothic architecture, which gives the city a mixed old-world yet modern feel.
 
 ![IU's campus](https://instagram.com/p/BPcy5n6jyLH/media/?size=l)
 
@@ -15,4 +15,4 @@ This first trail - Hobbs Hollow, was the most flowy, fun trail I think I had rid
 
 Katie cued me into this closed down market that was right behind her house that she recommended I park in, so I did. I camped there for 2 nights. The first night an SUV rolled in late and parked on the opposite side of this old mini-bus that I was parked next to. I was a little sketched out at first, but it was fine. They were just doing the same thing I was, bandit camping in an abandoned lot. The second night I had been out at a few bars on my bike. When I got back to my van they were there again, but this time with a super rad old GMC RV too. I had picked up some beers earlier, and I thought to myself, "Shit, these guys have to be pretty cool". So I grabbed my brews and knocked on the RV door. Sure enough, they were super chill. It turned out they were helping to renovate the old market. It was to be turned into an Asian inspired club of sorts, and they were doing some of the contracting. We chatted late into the night about, damn near every topic you could imagine. Eventually I said good night, and retired to my home across the parking lot.
 
-![But, before I left they wrote me a note :)](https://instagram.com/p/BcYQPwfFIzn/media/?size=l) 
+![But, before I left they wrote me a note :)](https://instagram.com/p/BcYQPwfFIzn/media/?size=l)
