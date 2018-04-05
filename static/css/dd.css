@@ -29,6 +29,13 @@ header > sub {
     font-size: 16px;
 }
 
+button {
+    font-family: 'MyScars', Fallback Arial;
+    border-radius: 8px;
+    background-color: transparent;
+    border: solid black 2px;
+}
+
 article {
     max-width: 760px;
     margin-left: auto;

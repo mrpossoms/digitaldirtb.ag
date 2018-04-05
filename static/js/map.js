@@ -1,9 +1,9 @@
 var map;
 
-Array.prototype.add = function(latLng, noCluster) {
+Array.prototype.add = function(latLng, title, noCluster) {
     var marker = new google.maps.Marker({
         position: latLng,
-        title: '',
+        title: title,
         label: this.length.toString()
     });
 
@@ -48,6 +48,13 @@ function getRoute(stops, success) {
 }
 
 
+function clearMarkers() {
+    markers.clear();
+    destinations.clear();
+    map.clusterer.clearMarkers();
+}
+
+
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
         zoom: 5,
@@ -68,7 +75,7 @@ function initMap() {
 
     map.addListener('click', function(e) {
         console.log(e);
-        destinations.add(e.latLng, true);
+        destinations.add(e.latLng, destinations.length == 0 ? "Start" : "End", true);
 
         if(destinations.length >= 2) {
             stops = [];
@@ -77,12 +84,22 @@ function initMap() {
                 stops.push(stop)
             }
 
+            function titleFromWaypoint(way)
+            {
+                var rating = '';
+                for(var i = parseInt(way.rating); i--; rating += '⭐️');
+                return way.name + ' ' + rating;
+            }
+
             getRoute(stops, function(trip) {
                 var route = trip.route;
                 for(var i = route.length; i--;)
                 {
                     waypoint = route[i];
-                    markers.add(new google.maps.LatLng(waypoint.lat, waypoint.lon));
+                    markers.add(
+                        new google.maps.LatLng(waypoint.lat, waypoint.lon),
+                        titleFromWaypoint(waypoint)
+                    );
                 }
                 refresh();
             });
